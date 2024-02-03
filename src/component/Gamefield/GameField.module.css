@@ -1,8 +1,8 @@
 
 
 .pauseBtn {
-  width : 60px;
-  height : 60px;
+  width : 75px;
+  height : 75px;
   line-height : 60px;  
   font-size: 35px;
   display: flex;
@@ -11,6 +11,11 @@
   background-color: var(--color-gameBtn);
   border: 4px solid white;
   border-radius: 20px;
+}
+
+.pauseBtn:hover{
+  background-color: var(--color-accent);
+  transform: scale(1.1);
 }
 
 .gameTimer {

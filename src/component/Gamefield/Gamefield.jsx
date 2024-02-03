@@ -7,16 +7,19 @@ import { MouseCountContext, CheeseCountContext } from '../context/itemCountConte
 const MOUSE_COUNT = 5;
 const CHEESE_COUNT = 5;
 
-export default function Gamefield({onStateChange}){
+export default function Gamefield({onStateChange, onDurationChange}){
   const [score, setScore] = useState(0)
-  const handleClick = ()=>{onStateChange()};
+  //const handleClick = (text)=>{onStateChange(text)};
 
   //마우스, 치즈 개수 context로 전달
   return (
     <MouseCountContext.Provider value={MOUSE_COUNT}> 
       <CheeseCountContext.Provider value={CHEESE_COUNT}>
         <div className={styles.gameField}>
-          <GameFieldTop score={score}/>
+          <GameFieldTop score={score} 
+            onGameStateClick = {onStateChange}
+            onGameDurationClick = {onDurationChange}
+          />
           <GameFieldBottom score={score}/>
         </div>
       </CheeseCountContext.Provider>

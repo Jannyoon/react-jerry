@@ -3,25 +3,36 @@ import './App.css';
 import Gamefield from './component/Gamefield/Gamefield';
 import PopUp from './component/Popup/PopUp';
 import { GameStateContext } from './component/context/gameStateContext';
+import { GameDurationContext } from './component/context/gameDurationContext';
 function App() {
-  //state : 'ready', 'pause', 'gaming', 'success', 'fail'
-  const [state, setState] = useState('ready'); 
+  //state : 'ready','gaming', end.('success', 'fail')
+  const [gamestate, setGameState] = useState('ready'); 
+  const [gameDuration, setGameDuration] = useState(10);
 
   const handleChangeState = (gameResult)=>{
-    setState(gameResult); //success or fail
+    setGameState(gameResult); //success or fail
   }
   const handleClick = ()=>{
-    setState('gaming');
+    setGameState('gaming');
     console.log('gaming');
   };
 
+  const handleGameDuration = (time)=>{
+    setGameDuration(time)    
+  }
+
   return (
    <div className='container'>
-      <GameStateContext.Provider value={state}>
-        <Gamefield onStateChange={handleChangeState}/>
-        <PopUp 
-          onClick={handleClick}
-        />   
+      <GameStateContext.Provider value={gamestate}>
+        <GameDurationContext.Provider value={gameDuration}>
+          <Gamefield 
+            onStateChange={handleChangeState}
+            onDurationChange={handleGameDuration}
+          />
+          <PopUp 
+            onClick={handleClick}
+          />   
+        </GameDurationContext.Provider>
       </GameStateContext.Provider>
    </div>
 

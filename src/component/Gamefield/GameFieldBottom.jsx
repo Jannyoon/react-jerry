@@ -77,8 +77,3 @@ export default function GameFieldBottom({score}) {
 function getRandomNumber(min, max){
   return Math.random()*(max-min)+min
 }
-/*
-//이게 꼴...
-<img className='item' src={}/>*/
-//각각 {className : 'item ${item}', src : item==='jerry'?jerryImg:cheeseImg, left : `${}px`, top:`${}px`}
-//정보를 저장해보자.
