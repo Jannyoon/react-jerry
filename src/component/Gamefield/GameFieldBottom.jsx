@@ -6,9 +6,9 @@ import { UseMouseContext, UseCheeseContext } from '../context/itemCountContext';
 import jerryImg from './Field-Img/jerry.png';
 import cheeseImg from './Field-Img/cheese.png';
 
-export default function GameFieldBottom() {
+export default function GameFieldBottom({score}) {
   const gameState = useGameStateContext();
-  let areaRef = useRef(0);
+  let areaRef = useRef(0); //bottom 영역 산출
 
   const [MOUSE_COUNT, CHEESE_COUNT] = [UseMouseContext(),UseCheeseContext()];  
   const [maxWidth, setMaxWidth] = useState(0);

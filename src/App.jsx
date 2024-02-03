@@ -4,7 +4,7 @@ import Gamefield from './component/Gamefield/Gamefield';
 import PopUp from './component/Popup/PopUp';
 import { GameStateContext } from './component/context/gameStateContext';
 function App() {
-  //state : 'ready', 'gaming', 'success', 'fail'
+  //state : 'ready', 'pause', 'gaming', 'success', 'fail'
   const [state, setState] = useState('ready'); 
 
   const handleChangeState = (gameResult)=>{
