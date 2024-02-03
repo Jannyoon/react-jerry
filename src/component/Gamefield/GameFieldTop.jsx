@@ -1,11 +1,15 @@
 import React from 'react';
 import styles from './GameField.module.css';
-
 import { FaPause } from "react-icons/fa";
+import { useGameStateContext } from '../context/gameStateContext';
+import { UseMouseContext, UseCheeseContext } from '../context/itemCountContext';
 
 export default function GameFieldTop() {
+  const gameState = useGameStateContext();
+  const [MOUSE, CHEESE] = [UseMouseContext(), UseCheeseContext()];
+  
   return (
-    <section className={styles.top}>
+    <section className={`${styles.top} ${gameState!=='gaming' && styles.hide}`}>
       <PauseBtn />
       <GameTimer/>
       <GameScore />
