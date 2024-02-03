@@ -40,12 +40,12 @@ function GameTimer({score, onGSClick, onGDClick}){
       if (remainingSec<=0 || gameState==='pause'){
         onGDClick(remainingSec);
         clearInterval(timer);
+        //onGSClick('end')
         return;
       }
       setForTimer(--remaining.current);
       console.log("남은시간:",remainingSec);
-      console.log(remaining);
-      console.log("원래 시간 :",DURATION); //현재 스냅샷의 context 정보 읽어주기
+      //console.log("원래 시간 :",DURATION); //현재 스냅샷의 context 정보 읽어주기
     },1000);
     return ()=>clearInterval(timer);
   },[gameState,remaining.current,DURATION])
