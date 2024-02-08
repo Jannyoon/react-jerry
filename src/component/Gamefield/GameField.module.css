@@ -83,3 +83,7 @@
 .hide {
   visibility: hidden;
 }
+
+.item:hover {
+  transform: rotate(1.1);
+}

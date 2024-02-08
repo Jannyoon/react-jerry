@@ -58,19 +58,22 @@ function GameTimer({timer, result, score, onGSClick,  onInitScore, onFinish}){
       }
       else if (showRemainingTime<=0){ //#
         clearInterval(intervalRef.current);
+        onInitScore(0);
+        intervalRef.current = undefined;
         //결과를 확인한다
         onGSClick('end');
         score<MOUSE_COUNT && onFinish('fail');
         setShowRemainingTime(DURATION);
-        onInitScore(0);
-        intervalRef.current = undefined;
         return;
       }
       else setShowRemainingTime(prev => prev-1);
       console.log("남은시간:",showRemainingTime);
       //console.log("원래 시간 :",DURATION); //현재 스냅샷의 context 정보 읽어주기
     },1000);
-    return ()=>clearInterval(intervalRef.current);
+    return ()=>{
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined; 
+    }
   },[gameState, showRemainingTime])//gameState
  
   const handleEnd = ()=>{
