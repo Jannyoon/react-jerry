@@ -6,7 +6,7 @@ import { useGameStateContext } from '../context/gameStateContext';
 import { UseGameDurationContext } from '../context/gameDurationContext'
 import { UseMouseContext, UseCheeseContext } from '../context/itemCountContext';
 
-export default function GameFieldTop({timer, result, score, onGameStateClick, onInitScore}) {
+export default function GameFieldTop({timer, result, score, onGameStateClick, onInitScore, onFinish}) {
   const gameState = useGameStateContext();
 
   return (
@@ -18,17 +18,19 @@ export default function GameFieldTop({timer, result, score, onGameStateClick, on
         score={score} 
         onGSClick={onGameStateClick} 
         onInitScore={onInitScore}
+        onFinish={onFinish}
       />
       <GameScore 
       score={score}
       onGSClick={onGameStateClick} 
+      onFinish={onFinish}
       />
     </section>
   );
 }
 
 
-function GameTimer({timer, result, score, onGSClick,  onInitScore}){
+function GameTimer({timer, result, score, onGSClick,  onInitScore, onFinish}){
   const gameState = useGameStateContext();
   const DURATION = UseGameDurationContext();
   const MOUSE_COUNT = UseMouseContext();
@@ -40,25 +42,14 @@ function GameTimer({timer, result, score, onGSClick,  onInitScore}){
 
 
   useEffect(()=>{ //팝업 제거 후 GameField 마운트 되자마자 보여져야 하는 파트. 
-    /*
-    if (gameState==='ready'|| 
-    gameState==='success' || 
-    gameState==='fail' || 
-    gameState==='end') return;
-    */
     console.log("현재 게임상태:", gameState);
 
     intervalRef.current = setInterval(()=>{
-      if (gameState==='ready'|| 
-        gameState==='success' || 
-        gameState==='fail' ||
-        gameState==='end'){
+      if (gameState==='ready'|| gameState==='end'){
         clearInterval(intervalRef.current);
         intervalRef.current = undefined; 
-        (gameState!=='ready') && onGSClick('end');
         onInitScore(0);
         setShowRemainingTime(DURATION);
-        
         return;
       }
       else if (gameState==='pause'){
@@ -69,6 +60,7 @@ function GameTimer({timer, result, score, onGSClick,  onInitScore}){
         clearInterval(intervalRef.current);
         //결과를 확인한다
         onGSClick('end');
+        score<MOUSE_COUNT && onFinish('fail');
         setShowRemainingTime(DURATION);
         onInitScore(0);
         intervalRef.current = undefined;
@@ -104,12 +96,15 @@ function GameTimer({timer, result, score, onGSClick,  onInitScore}){
   )
 }
 
-function GameScore({score, onGSClick}){
+function GameScore({score, onGSClick, onFinish}){
   const MOUSE_COUNT = UseMouseContext();
   const [ScreenScore, setScreenScore] = useState(score);
   useEffect(()=>{
     setScreenScore(score); 
-    if (ScreenScore===MOUSE_COUNT) onGSClick('end');
+    if (ScreenScore===MOUSE_COUNT){
+      onGSClick('end');
+      onFinish("success");
+    }
   }) 
   return (
     <>

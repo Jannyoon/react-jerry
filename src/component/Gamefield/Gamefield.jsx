@@ -22,6 +22,7 @@ export default function Gamefield({timer, result, onStateChange, onUpdateScore, 
             score={score} 
             onGameStateClick = {onStateChange}
             onInitScore = {onInitScore}
+            onFinish = {onFinish}
             
           />
           <GameFieldBottom 
