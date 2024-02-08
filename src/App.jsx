@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import './App.css';
 import Gamefield from './component/Gamefield/Gamefield';
 import PopUp from './component/Popup/PopUp';
@@ -10,7 +10,8 @@ function App() {
   const [gamestate, setGameState] = useState('ready'); 
   const [gameDuration, setGameDuration] = useState(10);
   const [gameScore, setGameScore] = useState(0)
-
+  const [gameResult, setGameResult] = useState("success");
+  const timer = useRef();
 
   const handleChangeState = (gameResult)=>{
     setGameState(gameResult); //success or fail
@@ -20,25 +21,29 @@ function App() {
     console.log('gaming');
   };
 
-  const handleGameDuration = (time)=>{
-    setGameDuration(time)    
-  }
 
   const handleUpdateScore = ()=>{
     setGameScore(prev => prev+1);
   }
 
+  const handleGameResult = (text)=>{
+    setGameResult(text);
+  }
+  
   return (
    <div className='container'>
       <GameStateContext.Provider value={gamestate}>
         <GameDurationContext.Provider value={gameDuration}>
           <GameScoreContext.Provider value={gameScore}>
             <Gamefield 
+              timer = {timer}
+              result = {gameResult}
               onStateChange={handleChangeState}
-              onDurationChange={handleGameDuration}
               onUpdateScore={handleUpdateScore}
+              onFinish = {handleGameResult}
             />
             <PopUp 
+              result = {gameResult}
               onClick={handleClick}
             />
           </GameScoreContext.Provider>   

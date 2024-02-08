@@ -8,7 +8,7 @@ import jerryImg from './Field-Img/jerry.png';
 import cheeseImg from './Field-Img/cheese.png';
 
 
-export default function GameFieldBottom({ onClick}) {
+export default function GameFieldBottom({result, score, onGameStateClick, onClick, onFinish}) {
   const gameState = useGameStateContext();
   let areaRef = useRef(0); //bottom 영역 산출
   
@@ -19,6 +19,7 @@ export default function GameFieldBottom({ onClick}) {
   const jerryList = useRef([]); 
   const cheeseList = useRef([]);
 
+
   useEffect(()=>{
     setMaxWidth( areaRef.current.offsetWidth);
     setMaxHeight(areaRef.current.offsetHeight);
@@ -27,7 +28,7 @@ export default function GameFieldBottom({ onClick}) {
   useEffect(()=>{
     jerryList.current = (addItem('jerry', MOUSE_COUNT));
     cheeseList.current = (addItem('cheese',CHEESE_COUNT));
-  },[maxWidth, maxHeight])
+  },[maxWidth, maxHeight, result])
 
   console.log(maxWidth, maxHeight);
   console.log(jerryList);
@@ -41,6 +42,10 @@ export default function GameFieldBottom({ onClick}) {
       jerryList.current= jerryList.current.filter((item)=>{
         return (item.id!==target.id)
       })     
+    }
+    else if (target.matches('.cheese')){
+      onGameStateClick('end');
+      onFinish('fail');
     }
     else return;
 

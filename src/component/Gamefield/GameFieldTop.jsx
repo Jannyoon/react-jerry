@@ -6,14 +6,17 @@ import { useGameStateContext } from '../context/gameStateContext';
 import { UseGameDurationContext } from '../context/gameDurationContext'
 import { UseMouseContext, UseCheeseContext } from '../context/itemCountContext';
 
-export default function GameFieldTop({score, onGameStateClick, onGameDurationClick}) {
+export default function GameFieldTop({timer, result, score, onGameStateClick, onGameDurationClick}) {
   const gameState = useGameStateContext();
   const [MOUSE, CHEESE] = [UseMouseContext(), UseCheeseContext()];
   
   return (
     <section className={`${styles.top} 
     ${(gameState==='end' || gameState==='ready') && styles.hide}`}>
-      <GameTimer score={score} 
+      <GameTimer 
+        timer = {timer}
+        result = {result}
+        score={score} 
         onGSClick={onGameStateClick} 
         onGDClick={onGameDurationClick}
       />
@@ -23,48 +26,63 @@ export default function GameFieldTop({score, onGameStateClick, onGameDurationCli
 }
 
 
-function GameTimer({score, onGSClick, onGDClick}){
+function GameTimer({timer, result, score, onGSClick, onGDClick}){
   const gameState = useGameStateContext();
   const DURATION = UseGameDurationContext();
-  let remaining = useRef(DURATION); 
+  let intervalRef = useRef(DURATION); //렌더링에 무관한 setIntervalID 저장용
 
-  let timer = undefined; //매 시작마다 초기화되어야 하므로
-  const [forTimer, setForTimer] = useState(remaining.current);
-  const [nowState, setNowState] = useState('gaming'); //컨텍스트를 읽어 렌더링을 일으키기 위함
+  //let timer = undefined; //매 시작마다 초기화되어야 하므로
+  const [showRemainingTime, setShowRemainingTime] = useState(DURATION);
+  const [nowState, setNowState] = useState('gaming'); //렌더링을 일으켜, 버튼을 바꾸기 위함
 
 
   useEffect(()=>{ //팝업 제거 후 GameField 마운트 되자마자 보여져야 하는 파트. 
-    let remainingSec = remaining.current;
-    if (gameState!=='gaming') return;
-    timer = setInterval(()=>{
-      if (remainingSec<=0 || gameState==='pause'){
-        onGDClick(remainingSec);
-        clearInterval(timer);
-        //onGSClick('end')
+    /*
+    if (gameState==='ready'|| 
+    gameState==='success' || 
+    gameState==='fail' || 
+    gameState==='end') return;
+    */
+    console.log("현재 게임상태:", gameState);
+
+    intervalRef.current = setInterval(()=>{
+      if (gameState==='ready'|| 
+        gameState==='success' || 
+        gameState==='fail' ||
+        gameState==='end'){
+        clearInterval(intervalRef.current);
+        onGSClick('end');
+        setShowRemainingTime(DURATION);
+        intervalRef.current = undefined; 
         return;
       }
-      setForTimer(--remaining.current);
-      console.log("남은시간:",remainingSec);
+      else if (gameState==='pause'){
+        clearInterval(intervalRef.current);
+        return;
+      }
+      else if (showRemainingTime<=0){ //#
+        clearInterval(intervalRef.current);
+        onGSClick('end');
+        setShowRemainingTime(DURATION);
+        intervalRef.current = undefined;
+        return;
+      }
+      else setShowRemainingTime(prev => prev-1);
+      console.log("남은시간:",showRemainingTime);
       //console.log("원래 시간 :",DURATION); //현재 스냅샷의 context 정보 읽어주기
     },1000);
-    return ()=>clearInterval(timer);
-  },[gameState,remaining.current,DURATION])
+    return ()=>clearInterval(intervalRef.current);
+  },[gameState])//gameState
  
   const handleEnd = ()=>{
-    
     if (nowState==='gaming'){
       setNowState('pause');
       onGSClick('pause');
-      onGDClick(remaining.current);
-      console.log("REMAINING:",remaining.current);
-      clearInterval(timer);
-      //timer = undefined;
-      //remainingSec = 0;
+      //clearInterval(intervalRef.current);
     } 
     else if (nowState==='pause'){
       setNowState('gaming');
       onGSClick('gaming');
-      
     }
     console.log(gameState);
   }
@@ -75,9 +93,7 @@ function GameTimer({score, onGSClick, onGDClick}){
         {nowState==='pause' && <FaPlay />}
       </button> 
       <span className={styles.gameTimer}>
-      {`${Math.floor(forTimer/60)}:${forTimer%60}`      
-
-      }</span>
+      {`${Math.floor(showRemainingTime/60)}:${showRemainingTime%60}`}</span>
     </>
   )
 }
