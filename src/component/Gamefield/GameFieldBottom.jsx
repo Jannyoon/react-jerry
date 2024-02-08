@@ -26,9 +26,11 @@ export default function GameFieldBottom({result, score, onGameStateClick, onClic
   },[])
 
   useEffect(()=>{
-    jerryList.current = (addItem('jerry', MOUSE_COUNT));
-    cheeseList.current = (addItem('cheese',CHEESE_COUNT));
-  },[maxWidth, maxHeight, result])
+    if (gameState==='ready' || gameState==='end'){
+      jerryList.current = (addItem('jerry', MOUSE_COUNT));
+      cheeseList.current = (addItem('cheese',CHEESE_COUNT));
+    }
+  },[maxWidth, maxHeight, gameState])
 
   console.log(maxWidth, maxHeight);
   console.log(jerryList);

@@ -29,6 +29,10 @@ function App() {
   const handleGameResult = (text)=>{
     setGameResult(text);
   }
+
+  const handleInitScore = ()=>{
+    setGameScore(0);
+  }
   
   return (
    <div className='container'>
@@ -41,6 +45,7 @@ function App() {
               onStateChange={handleChangeState}
               onUpdateScore={handleUpdateScore}
               onFinish = {handleGameResult}
+              onInitScore = {handleInitScore}
             />
             <PopUp 
               result = {gameResult}

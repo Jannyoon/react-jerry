@@ -6,10 +6,9 @@ import { useGameStateContext } from '../context/gameStateContext';
 import { UseGameDurationContext } from '../context/gameDurationContext'
 import { UseMouseContext, UseCheeseContext } from '../context/itemCountContext';
 
-export default function GameFieldTop({timer, result, score, onGameStateClick, onGameDurationClick}) {
+export default function GameFieldTop({timer, result, score, onGameStateClick, onInitScore}) {
   const gameState = useGameStateContext();
-  const [MOUSE, CHEESE] = [UseMouseContext(), UseCheeseContext()];
-  
+
   return (
     <section className={`${styles.top} 
     ${(gameState==='end' || gameState==='ready') && styles.hide}`}>
@@ -18,19 +17,23 @@ export default function GameFieldTop({timer, result, score, onGameStateClick, on
         result = {result}
         score={score} 
         onGSClick={onGameStateClick} 
-        onGDClick={onGameDurationClick}
+        onInitScore={onInitScore}
       />
-      <GameScore score={score}/>
+      <GameScore 
+      score={score}
+      onGSClick={onGameStateClick} 
+      />
     </section>
   );
 }
 
 
-function GameTimer({timer, result, score, onGSClick, onGDClick}){
+function GameTimer({timer, result, score, onGSClick,  onInitScore}){
   const gameState = useGameStateContext();
   const DURATION = UseGameDurationContext();
+  const MOUSE_COUNT = UseMouseContext();
   let intervalRef = useRef(DURATION); //렌더링에 무관한 setIntervalID 저장용
-
+  
   //let timer = undefined; //매 시작마다 초기화되어야 하므로
   const [showRemainingTime, setShowRemainingTime] = useState(DURATION);
   const [nowState, setNowState] = useState('gaming'); //렌더링을 일으켜, 버튼을 바꾸기 위함
@@ -51,9 +54,11 @@ function GameTimer({timer, result, score, onGSClick, onGDClick}){
         gameState==='fail' ||
         gameState==='end'){
         clearInterval(intervalRef.current);
-        onGSClick('end');
-        setShowRemainingTime(DURATION);
         intervalRef.current = undefined; 
+        (gameState!=='ready') && onGSClick('end');
+        onInitScore(0);
+        setShowRemainingTime(DURATION);
+        
         return;
       }
       else if (gameState==='pause'){
@@ -62,8 +67,10 @@ function GameTimer({timer, result, score, onGSClick, onGDClick}){
       }
       else if (showRemainingTime<=0){ //#
         clearInterval(intervalRef.current);
+        //결과를 확인한다
         onGSClick('end');
         setShowRemainingTime(DURATION);
+        onInitScore(0);
         intervalRef.current = undefined;
         return;
       }
@@ -78,7 +85,6 @@ function GameTimer({timer, result, score, onGSClick, onGDClick}){
     if (nowState==='gaming'){
       setNowState('pause');
       onGSClick('pause');
-      //clearInterval(intervalRef.current);
     } 
     else if (nowState==='pause'){
       setNowState('gaming');
@@ -93,20 +99,21 @@ function GameTimer({timer, result, score, onGSClick, onGDClick}){
         {nowState==='pause' && <FaPlay />}
       </button> 
       <span className={styles.gameTimer}>
-      {`${Math.floor(showRemainingTime/60)}:${showRemainingTime%60}`}</span>
+      {`${String(Math.floor(showRemainingTime/60)).padStart(2,'0')}:${String(showRemainingTime%60).padStart(2,'0')}`}</span>
     </>
   )
 }
 
-function GameScore({score}){
-  const CHEESE_COUNT = UseCheeseContext();
+function GameScore({score, onGSClick}){
+  const MOUSE_COUNT = UseMouseContext();
   const [ScreenScore, setScreenScore] = useState(score);
   useEffect(()=>{
-   setScreenScore(score); 
+    setScreenScore(score); 
+    if (ScreenScore===MOUSE_COUNT) onGSClick('end');
   }) 
   return (
     <>
-      <div className={styles.gameScore}>{CHEESE_COUNT-ScreenScore}</div>
+      <div className={styles.gameScore}>{MOUSE_COUNT-ScreenScore}</div>
     </>
   )
 }

@@ -6,7 +6,6 @@ import refreshImgUrl from './PopupImg/jerryEatingCheeseCopy.png';
 import { useGameStateContext } from '../context/gameStateContext';
 
 export default function PopUp({result, onClick}) {
-  
   const nowState = useGameStateContext();
   return (
     <div>
