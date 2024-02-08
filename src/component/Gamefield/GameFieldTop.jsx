@@ -71,7 +71,7 @@ function GameTimer({timer, result, score, onGSClick,  onInitScore, onFinish}){
       //console.log("원래 시간 :",DURATION); //현재 스냅샷의 context 정보 읽어주기
     },1000);
     return ()=>clearInterval(intervalRef.current);
-  },[gameState])//gameState
+  },[gameState, showRemainingTime])//gameState
  
   const handleEnd = ()=>{
     if (nowState==='gaming'){
